@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# @Time    :2024/10/30 13:47:17
+# @Author  :小 y 同 学
+# @公众号   :小y只会写bug
+# @CSDN    :https://blog.csdn.net/weixin_64989228?type=blog
+# @Discript:根据账号密码获取登录cookie
+import requests
+
+
+class Cookie:
+    def __init__(self, userId: str, userPwd: str) -> None:
+        """_summary_
+
+        Args:
+            userId (str): ASF账号
+            userPwd (str): ASF密码
+        """
+        self.userId = userId
+        self.userPwd = userPwd
+
+    def getCookie(self):
+        """获取下载ASF数据所需要的cookie
+
+        Returns:
+            _type_: _description_
+        """
+        url = (
+            "https://urs.earthdata.nasa.gov/oauth/authorize?response_type=code&"
+            "client_id=BO_n7nTIlMljdvU6kRRB3g&redirect_uri=https://auth.asf.alaska.edu/login&"
+        )
+        headers = {
+            "response_type": "code",
+            "client_id": "BO_n7nTIlMljdvU6kRRB3g",
+            "redirect_uri": "https://auth.asf.alaska.edu/login",
+        }
+        login_data = {
+            "username": self.userId,
+            "password": self.userPwd,
+        }
+
+        with requests.session() as s:
+            res = s.get(url, auth=(self.userId, self.userPwd))
+            if res.status_code == 200:
+                print("Login Success!userId:", self.userId)
+                cookie_dict = requests.utils.dict_from_cookiejar(s.cookies)
+                return f"asf-urs={cookie_dict['asf-urs']}"
+
+
+if __name__ == "__main__":
+    # userId = ""
+    # userPwd = ""
+    # cookie = Cookie(userId, userPwd)
+    # print(cookie.getCookie())
+    pass
