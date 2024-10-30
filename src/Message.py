@@ -9,7 +9,7 @@ from datetime import datetime
 import time
 
 
-def addDate(func):
+def addDate(func):  # 日期装饰器
     def wrapper(*args, **kwargs):
         now = datetime.now()
         format_now = now.strftime("[%Y-%m-%d %H:%M:%S]")

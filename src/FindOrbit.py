@@ -17,23 +17,28 @@ from src.ExtractDate import *
 class FindOrbit:
     def __init__(self) -> None:
         """获取轨道文件列表"""
-        while not self.__get_eof_list():
-            pass
+        self.__get_eof_list()
+        Message.print_info("Get Orbit list successfully!")
 
-    def fromSLC(self, SLCFile):
+    def fromSLC(self, SLCFile) -> str:
         """根据SLC文件名查找轨道文件"""
         for eof in self.eoflist:
-            if os.path.splitext(eof)[1] == ".EOF":
-                if SLCToDate.One(SLCFile) == EOFToDate.One(eof):
-                    res = f"https://s1qc.asf.alaska.edu/aux_poeorb/{eof}"
-                    return res
-        return None
+            date = SLCToDate.One(SLCFile)
+            return self.fromDate(eof[0:3], date)
 
-    def fromDate(self, date):
-        """根据日期查找轨道文件"""
+    def fromSLCList(self, SLCList) -> list:
+        eofList = []
+        for SLC in SLCList:
+            eofList.append(self.fromSLC(SLC))
+        return eofList
+
+    def fromSatandDate(self, sat, date):
+        """根据卫星(S1A or S1B不区分大小写)日期查找轨道文件"""
         for eof in self.eoflist:
             if os.path.splitext(eof)[1] == ".EOF":
-                if EOFToDate.One(eof) == str(date):
+                if EOFToDate.One(eof) == str(date) and str.upper(sat) == str.upper(
+                    eof[0:3]
+                ):  # 不区分大小写
                     res = f"https://s1qc.asf.alaska.edu/aux_poeorb/{eof}"
                     return res
         return None
@@ -44,13 +49,12 @@ class FindOrbit:
         try:
             res = requests.get(eoflisturl, timeout=20)
             self.eoflist = re.findall('href="(.*?\.EOF)">', res.text)
-            print(self.eoflist)
             return True
         except Exception as e:
             Message.print_error(
-                f"{str(e)}\nAn exception occurred while getting the EOF list\nRetry."
+                f"{str(e)}\nAn exception occurred while getting the EOF list, retrying..."
             )
-            return False
+            self.__get_eof_list()
 
 
 if __name__ == "__main__":
@@ -60,4 +64,4 @@ if __name__ == "__main__":
             "S1A_IW_SLC__1SDV_20141003T235924_20141003T235951_002661_002F1D_1A1D.SAFE"
         )
     )
-    print(fdo.fromDate("20230929"))
+    print(fdo.fromSatandDate("S1a", "20230929"))

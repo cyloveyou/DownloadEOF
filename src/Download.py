@@ -30,6 +30,9 @@ def DownloadOne(eoflink, cookie, saveFolder=".", proxies=None):
         "Upgrade-Insecure-Requests": "1",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
     }
+    if not os.path.exists(saveFolder):
+        os.makedirs(saveFolder)
+
     filePath = os.path.join(saveFolder, eoflink.split("/")[-1])
     tempPath = filePath + ".temp"
     try:
@@ -46,18 +49,26 @@ def DownloadOne(eoflink, cookie, saveFolder=".", proxies=None):
 
 
 def DownloadSingle(eoflink, cookie, saveFolder=".", proxies=None):
-    """单进程下载"""
+    """单个下载"""
+    filePath = os.path.join(saveFolder, eoflink.split("/")[-1])
+    if os.path.exists(filePath):
+        Message.print_exist(filePath)
+        return True
+    Message.print_downloading(eoflink)
+    flag = DownloadOne(eoflink, cookie, saveFolder, proxies)
+    while not flag:
+        Message.print_error(f"{eoflink}\n...Download failed, retrying...")
+        flag = DownloadOne(eoflink, cookie, saveFolder, proxies)
+    Message.print_downloadOK(eoflink)
+    return False
 
-    return DownloadOne(eoflink, cookie, saveFolder, proxies)
 
-
-def DownloadMore(eoflinks, cookie, saveFolder=".", proxies=None):
+def DownloadMulit(eoflinks, cookie, workers=3, saveFolder=".", proxies=None):
     """多进程下载"""
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=workers) as executor:
         for eoflink in eoflinks:
             executor.submit(DownloadSingle, eoflink, cookie, saveFolder, proxies)
     return True
-    pass
 
 
 if __name__ == "__main__":

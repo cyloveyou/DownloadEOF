@@ -7,14 +7,81 @@
 # @Discript:命令行交互
 
 import sys
-from src.Message import Message
+import os
 
-argv = sys.argv
-if len(argv) == 1:
-    Message.print_help()
-    sys.exit(0)
-elif argv[1] == "-h" or argv[1] == "--help":
-    Message.print_help()
-    sys.exit(0)
-else:
-    pass
+from src.Message import *
+from src.Cookie import *
+from src.SentinelOrbit import *
+from src.InputParam import *
+from src.SetConfig import *
+from src.ExtractDate import *
+from src.ExtractSLC import *
+from src.Download import *
+from src.FindOrbit import *
+
+
+def main(configfile):
+    # 1.读取配置文件
+    Message.print_info(f"1. Read config file from {configfile}...")
+    param = inputParam(configfile)
+    if param.ipport:
+        proxies = {"http": param.ipport, "https": param.ipport}
+    Message.print_info(f"Read config file OK.")
+
+    # 2.获取SLC文件列表
+    if os.path.exists(param.inputslc):
+        Message.print_info(f"2. Find SLC from {param.inputslc}")
+        SLClist = ExtractDate.from_slc_folder(param.inputslc)
+    elif param.inputslc.endswith(".py"):
+        Message.print_info(f"2. Find SLC from {param.inputslc}")
+        SLClist = ExtractDate.form_asf_pylink(param.inputslc)
+    elif param.inputslc.endswith(".metalink"):
+        Message.print_info(f"2. Find SLC from {param.inputslc}")
+        SLClist = ExtractDate.from_asf_metlink(param.inputslc)
+    else:
+        Message.print_error(
+            f"Can't understand the config inputslc, the value is {param.inputslc}. Please check the config file."
+        )
+        sys.exit(0)
+    Message.print_info(f"Find {len(SLClist)} SLC files.")
+    if len(SLClist) == 0:
+        sys.exit(0)
+
+    # 3.获取轨道文件列表
+    Message.print_info("3. Get orbit file list...")
+    findorb = FindOrbit()
+    orbitList = findorb.fromSLC(SLClist[0])
+
+    # 4.获取cookie
+    Message.print_info("4. Get cookie...")
+    cookie = Cookie(param.userid, param.userpwd).getCookie()
+
+    # 5.下载轨道文件
+
+    DownloadMulit(
+        orbitList,
+        cookie,
+        workers=3,
+        saveFolder=param.savepath,
+    )
+
+
+if __name__ == "__main__":
+    argv = sys.argv
+    if len(argv) == 1:
+        Message.print_help()
+        sys.exit(0)
+    elif argv[1] == "-c":
+        SetConfig.CreatDefault()
+        sys.exit(0)
+    elif argv[1] == "-h" or argv[1] == "--help":
+        Message.print_help()
+        sys.exit(0)
+    elif argv[1] == "-v" or argv[1] == "--version":
+        print("version 1.0")
+    elif argv[1].endswith(".ini"):
+        main(argv[1])
+    else:
+        print("Please enter the correct parameters")
+        Message.print_help()
+        sys.exit(0)
