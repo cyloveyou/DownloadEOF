@@ -7,6 +7,15 @@
 # @Discript:处理配置文件读取程序参数
 
 from configparser import ConfigParser
+import os
+from Message import *
+
+
+# def checkPath(path):
+#     if os.path.isabs(path):
+#         return path
+#     else:
+#         return os.path.abspath(path)
 
 
 class inputParam:
@@ -37,3 +46,8 @@ class inputParam:
             self.ipport = None
 
         self.workers = conf.get("OtherInfo", "workers")
+        if str.isdigit(self.workers):
+            self.workers = int(self.workers)
+        else:
+            Message.print_error(f"workers must be a number, but got {self.workers}.")
+            self.workers = None

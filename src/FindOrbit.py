@@ -15,16 +15,16 @@ from src.ExtractDate import *
 
 
 class FindOrbit:
-    def __init__(self) -> None:
+    def __init__(self, proxies) -> None:
         """获取轨道文件列表"""
-        self.__get_eof_list()
+        self.__get_eof_list(proxies)
         Message.print_info("Get Orbit list successfully!")
 
     def fromSLC(self, SLCFile) -> str:
         """根据SLC文件名查找轨道文件"""
-        for eof in self.eoflist:
-            date = SLCToDate.One(SLCFile)
-            return self.fromDate(eof[0:3], date)
+        date = SLCToDate.One(SLCFile)
+        sat = SLCFile[0:3]
+        return self.fromSatandDate(sat, date)
 
     def fromSLCList(self, SLCList) -> list:
         eofList = []
@@ -43,11 +43,11 @@ class FindOrbit:
                     return res
         return None
 
-    def __get_eof_list(self):
+    def __get_eof_list(self, proxies=None):
         Message.print_info("Getting EOF list from ASF...")
         eoflisturl = "https://s1qc.asf.alaska.edu/aux_poeorb/"
         try:
-            res = requests.get(eoflisturl, timeout=20)
+            res = requests.get(eoflisturl, timeout=20, proxies=proxies)
             self.eoflist = re.findall('href="(.*?\.EOF)">', res.text)
             return True
         except Exception as e:

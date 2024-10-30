@@ -26,10 +26,12 @@ def main(configfile):
     param = inputParam(configfile)
     if param.ipport:
         proxies = {"http": param.ipport, "https": param.ipport}
+    else:
+        proxies = None
     Message.print_info(f"Read config file OK.")
 
     # 2.获取SLC文件列表
-    if os.path.exists(param.inputslc):
+    if os.path.isdir(param.inputslc):
         Message.print_info(f"2. Find SLC from {param.inputslc}")
         SLClist = ExtractDate.from_slc_folder(param.inputslc)
     elif param.inputslc.endswith(".py"):
@@ -49,21 +51,25 @@ def main(configfile):
 
     # 3.获取轨道文件列表
     Message.print_info("3. Get orbit file list...")
-    findorb = FindOrbit()
-    orbitList = findorb.fromSLC(SLClist[0])
+    findorb = FindOrbit(proxies)
+    orbitList = findorb.fromSLCList(SLClist)
+    Message.print_info(f"Get {len(orbitList)} orbit files.")
 
     # 4.获取cookie
     Message.print_info("4. Get cookie...")
-    cookie = Cookie(param.userid, param.userpwd).getCookie()
+    cookie = Cookie(param.userid, param.userpwd).getCookie(proxies)
+    Message.print_info("Get cookie OK.")
 
     # 5.下载轨道文件
-
+    Message.print_info(f"5. Download orbit files, savepath={param.savepath}")
     DownloadMulit(
         orbitList,
         cookie,
-        workers=3,
+        workers=param.workers,
         saveFolder=param.savepath,
+        proxies=proxies,
     )
+    Message.print_info("Download orbit files OK.")
 
 
 if __name__ == "__main__":

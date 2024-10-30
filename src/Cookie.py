@@ -49,6 +49,7 @@ class Cookie:
             Message.print_error(
                 f"{str(e)}\nAn exception occurred while getting the cookie, retrying..."
             )
+            time.sleep(1)
             self.getCookie(proxies)
 
 

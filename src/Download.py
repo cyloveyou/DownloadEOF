@@ -19,7 +19,6 @@ def DownloadOne(eoflink, cookie, saveFolder=".", proxies=None):
         "Connection": "keep-alive",
         "Cookie": cookie,
         "Host": "s1qc.asf.alaska.edu",
-        "Referer": "https://s1qc.asf.alaska.edu/aux_poeorb/?sentinel1__mission=S1A&validity_start=2015-02-19",
         "sec-ch-ua": '" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96"',
         "sec-ch-ua-mobile": "?0",
         "sec-ch-ua-platform": '"Windows "',
@@ -36,15 +35,25 @@ def DownloadOne(eoflink, cookie, saveFolder=".", proxies=None):
     filePath = os.path.join(saveFolder, eoflink.split("/")[-1])
     tempPath = filePath + ".temp"
     try:
-        with requests.get(ulr=eoflink, headers=headers, proxies=proxies) as res:
+        with requests.get(
+            url=eoflink, headers=headers, stream=True, proxies=proxies, timeout=10
+        ) as res:
+            content_length = int(res.headers.get("Content-Length", 0))
             if res.status_code == 200:
+                downloaded_size = 0
                 with open(tempPath, "wb") as f:
-                    f.write(res.content)
-                os.rename(tempPath, filePath)
+                    for chunk in res.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+                            downloaded_size += len(chunk)
+                if downloaded_size == content_length:
+                    os.rename(tempPath, filePath)
+                else:
+                    return False
                 return True
             else:
                 return False
-    except:
+    except Exception as e:
         return False
 
 
@@ -57,7 +66,8 @@ def DownloadSingle(eoflink, cookie, saveFolder=".", proxies=None):
     Message.print_downloading(eoflink)
     flag = DownloadOne(eoflink, cookie, saveFolder, proxies)
     while not flag:
-        Message.print_error(f"{eoflink}\n...Download failed, retrying...")
+        Message.print_error(f"{eoflink} Download failed, retrying...")
+        time.sleep(1)
         flag = DownloadOne(eoflink, cookie, saveFolder, proxies)
     Message.print_downloadOK(eoflink)
     return False
