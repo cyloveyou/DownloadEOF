@@ -7,7 +7,7 @@
 # @Discript:下载数据
 import os
 import requests
-from src.Message import *
+from SentinelOrbit.Message import *
 from concurrent.futures import ThreadPoolExecutor
 
 
