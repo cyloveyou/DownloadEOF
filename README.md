@@ -6,13 +6,13 @@ SentinelOrbit是一个python三方模块，主要由Python3编程语言，可以
 
 # 安装方法
 
-## 安装依赖库
+## 1.安装依赖库
 
 ```pthon
 pip install requests
 ```
 
-## 下载whl文件
+## 2.使用whl文件安装
 
 项目已打包好.whl文件，下载whl文件，使用pip命令安装即可。
 
