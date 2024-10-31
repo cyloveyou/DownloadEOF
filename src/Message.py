@@ -47,42 +47,56 @@ class Message:
     # region 建立字符串，可连接界面
     def str_help() -> str:
         """帮助文档"""
-        str = "Usage: python3 main.py [options] [args]\n"
-        str += "Options:\n"
-        str += "  -h, --help\n"
-        return str
+        content = ""
+        content += "This is a tool to download Sentinel-1 orbit data from ASF.\n\n"
+        content += "Usage: SentinelOrbit.py [options]"
+        content += "Options:\n"
+        content += "  -c, --config  Create a default configuration file in the current working directory\n"
+        content += "  -d, --default Use the default(in user home) configuration file in the current working directory\n"
+        content += "  xx.ini,       Use the specified configuration file\n"
+        content += "  -h, --help    Print this page\n"
+        content += "  -v, --version Print current version\n"
+        content += "\n"
+        content += (
+            "Welcome to star the github: https://github.com/cyloveyou/SentinelOrbit \n"
+        )
+        content += (
+            "I'd appreciate it if you could give me some suggestions and ideas.\n"
+        )
+
+        return content
 
     @addDate
     def str_info(msg: str = "*" * 50) -> str:
         """一般提示"""
-        str = f"[Info]:{msg}"
-        return str
+        content = f"[Info]:{msg}"
+        return content
 
     @addDate
     def str_error(msg: str) -> str:
         """错误提示"""
-        str = f"[Error]:{msg}"
-        return str
+        content = f"[Error]:{msg}"
+        return content
 
     @addDate
     def str_exist(filePath: str) -> str:
         """已经存在文件提示"""
-        str = f"[Exist&Skip]:{filePath}"
-        return str
+        content = f"[Exist&Skip]:{filePath}"
+        return content
 
     @addDate
     def str_downloading(
         eoflink: str,
     ) -> str:
         """正在下载提示"""
-        str = f"[Downloading]:{eoflink}"
-        return str
+        content = f"[Downloading]:{eoflink}"
+        return content
 
     @addDate
     def str_downloadOK(filePath: str) -> str:
         """下载成功提示"""
-        str = f"[DownloadOK]:{filePath}"
-        return str
+        content = f"[DownloadOK]:{filePath}"
+        return content
 
     # endregion
 

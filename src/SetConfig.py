@@ -15,7 +15,7 @@ class SetConfig:
     def __init__(self) -> None:
         pass
 
-    def CreatDefault() -> None:
+    def CreatTemplate(filepath="SentinelOrbit.ini") -> None:
         conf = ConfigParser()
         # ASF相关信息
         conf.add_section("ASFInfo")
@@ -30,9 +30,9 @@ class SetConfig:
         conf.add_section("OrbitInfo")
         conf.set("OrbitInfo", "savepath", ".")
 
-        # 代理相关
+        # 其他参数
         conf.add_section("OtherInfo")
-        conf.set("OtherInfo", "ipport", "")
-        conf.set("OtherInfo", "workers", "")
+        conf.set("OtherInfo", "ipport", "")  # 代理
+        conf.set("OtherInfo", "workers", "3")  # 默认3个线程
 
-        conf.write(open("config.ini", "w"))
+        conf.write(open(filepath, "w"))

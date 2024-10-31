@@ -39,7 +39,10 @@ class inputParam:
         self.userpwd = conf.get("ASFInfo", "userpwd")
 
         self.inputslc = conf.get("SLCInfo", "inputslc")
+        self.inputslc = os.path.abspath(self.inputslc)
+
         self.savepath = conf.get("OrbitInfo", "savepath")
+        self.savepath = os.path.abspath(self.savepath)
 
         self.ipport = conf.get("OtherInfo", "ipport")
         if self.ipport == "":

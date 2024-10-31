@@ -36,25 +36,26 @@ def DownloadOne(eoflink, cookie, saveFolder=".", proxies=None):
     tempPath = filePath + ".temp"
     try:
         with requests.get(
-            url=eoflink, headers=headers, stream=True, proxies=proxies, timeout=10
+            url=eoflink, headers=headers, stream=True, proxies=proxies, timeout=60
         ) as res:
             content_length = int(res.headers.get("Content-Length", 0))
             if res.status_code == 200:
                 downloaded_size = 0
                 with open(tempPath, "wb") as f:
-                    for chunk in res.iter_content(chunk_size=8192):
+                    for chunk in res.iter_content(chunk_size=1024 * 512):
                         if chunk:
                             f.write(chunk)
+                            f.flush()
                             downloaded_size += len(chunk)
                 if downloaded_size == content_length:
                     os.rename(tempPath, filePath)
                 else:
-                    return False
+                    return "file size error"
                 return True
             else:
-                return False
+                return "status code error"
     except Exception as e:
-        return False
+        return f"{str(e)}"
 
 
 def DownloadSingle(eoflink, cookie, saveFolder=".", proxies=None):
@@ -65,8 +66,8 @@ def DownloadSingle(eoflink, cookie, saveFolder=".", proxies=None):
         return True
     Message.print_downloading(eoflink)
     flag = DownloadOne(eoflink, cookie, saveFolder, proxies)
-    while not flag:
-        Message.print_error(f"{eoflink} Download failed, retrying...")
+    while flag != True:
+        Message.print_error(f"{flag}\n{eoflink} Download failed, retrying...")
         time.sleep(1)
         flag = DownloadOne(eoflink, cookie, saveFolder, proxies)
     Message.print_downloadOK(eoflink)

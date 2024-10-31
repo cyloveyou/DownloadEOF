@@ -8,6 +8,7 @@
 
 import sys
 import os
+import pathlib
 
 from src.Message import *
 from src.Cookie import *
@@ -45,9 +46,11 @@ def main(configfile):
             f"Can't understand the config inputslc, the value is {param.inputslc}. Please check the config file."
         )
         sys.exit(0)
-    Message.print_info(f"Find {len(SLClist)} SLC files.")
     if len(SLClist) == 0:
+        Message.print_info("Can't find any SLC files.Exit.")
         sys.exit(0)
+    else:
+        Message.print_info(f"Find {len(SLClist)} SLC files.")
 
     # 3.获取轨道文件列表
     Message.print_info("3. Get orbit file list...")
@@ -74,19 +77,27 @@ def main(configfile):
 
 if __name__ == "__main__":
     argv = sys.argv
-    if len(argv) == 1:
+    if len(argv) == 1 or argv[1] == "-h" or argv[1] == "--help":
         Message.print_help()
-        sys.exit(0)
-    elif argv[1] == "-c":
-        SetConfig.CreatDefault()
-        sys.exit(0)
-    elif argv[1] == "-h" or argv[1] == "--help":
-        Message.print_help()
-        sys.exit(0)
+
+    elif argv[1] == "-c" or argv[1] == "--config":  #
+        SetConfig.CreatTemplate()
+    elif argv[1] == "-d" or argv == "--default":  # 使用默认配置文件
+        homedir = str(pathlib.Path.home())
+        defaultConfigPath = os.path.join(homedir, "SentinelOrbit.ini")
+        if os.path.exists(defaultConfigPath):
+            main(defaultConfigPath)
+        else:
+            Message.print_error(
+                f"\nCan't find the default config file {defaultConfigPath}\n Auto create a new config file {defaultConfigPath}.\nPlese modify the config file and run the program again."
+            )
+            SetConfig.CreatTemplate(defaultConfigPath)
+
     elif argv[1] == "-v" or argv[1] == "--version":
         print("version 1.0")
     elif argv[1].endswith(".ini"):
-        main(argv[1])
+        configfile = os.path.abspath(argv[1])
+        main(configfile)
     else:
         print("Please enter the correct parameters")
         Message.print_help()
