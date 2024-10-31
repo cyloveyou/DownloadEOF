@@ -8,7 +8,7 @@
 
 from configparser import ConfigParser
 import os
-from Message import *
+from src.Message import *
 
 
 # def checkPath(path):

@@ -1,3 +1,17 @@
+Metadata-Version: 2.1
+Name: SentinelOrbit
+Version: 1.0
+Summary: This is a tool to download Sentinel-1 orbit data from ASF.
+Home-page: https://github.com/cyloveyou/SentinelOrbit 
+Author: 小y同学
+Author-email: 3232076199@qq.com
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Requires-Dist: requests
+
 # SentinelOrbit
 
 # 项目介绍
@@ -12,19 +26,7 @@ SentinelOrbit是一个python三方模块，主要由Python3编程语言，可以
 pip install requests
 ```
 
-## 下载whl文件
-
 项目已打包好.whl文件，下载whl文件，使用pip命令安装即可。
-
-![image-20241031170603540](README.assets/image-20241031170603540.png)
-
-![image-20241031170735118](README.assets/image-20241031170735118.png)
-
-![image-20241031170747307](README.assets/image-20241031170747307.png)
-
-使用命令`SentinelOrbit.py -h`可以查看是否安装成功
-
-![image-20241031170805412](README.assets/image-20241031170805412.png)
 
 # 快速上手
 
@@ -72,37 +74,42 @@ workers = 3
 SentinelOrbit.py SentinelOrbit.ini
 ```
 
-# 主要目录结构
+# 目录结构
 
 ```
-├── build
-├── dist
-│   ├── SentinelOrbit-1.0-py3-none-any.whl
-│   └── SentinelOrbit-1.0.tar.gz
 ├── doc
 │   └── 模块结构设计.xmind
 ├── exampleData
 │   ├── asf-datapool-results-2024-10-25_10-46-01.metalink
 │   └── download-all-2024-10-25_09-09-42.py
-├── README.assets
 ├── README.md
-├── SentinelOrbit
+├── release
+├── SentinelOrbit.ini
+├── src
 │   ├── Cookie.py
 │   ├── Download.py
 │   ├── ExtractDate.py
 │   ├── ExtractSLC.py
 │   ├── FindOrbit.py
-│   ├── __init__.py
 │   ├── InputParam.py
 │   ├── Message.py
 │   ├── __pycache__
-├── SentinelOrbit.egg-info
-├── setup.py
+│   │   ├── Cookie.cpython-39.pyc
+│   │   ├── Download.cpython-39.pyc
+│   │   ├── ExtractDate.cpython-39.pyc
+│   │   ├── ExtractSLC.cpython-39.pyc
+│   │   ├── FindOrbit.cpython-39.pyc
+│   │   ├── InputParam.cpython-39.pyc
+│   │   ├── Message.cpython-39.pyc
+│   │   ├── SentinelOrbit.cpython-39.pyc
+│   │   └── SetConfig.cpython-39.pyc
+│   ├── SentinelOrbit.py
+│   └── SetConfig.py
 ```
 
 
 
-# 关于作者
+## 关于作者
 
 <div>
     <img alt="Static Badge" src="https://img.shields.io/badge/QQ-3232076199-blue">
